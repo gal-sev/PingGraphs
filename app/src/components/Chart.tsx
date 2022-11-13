@@ -7,13 +7,14 @@ export interface ChartI {
   pingTime: number
 }
 
-function Chart(props: {data: any[], dataKeys: string[], colors: string[]}) {
+function Chart(props: {data: any[], dataKeys: string[], colors: string[], title: string}) {
   return (
     <div className="Chart">
-      <h1>Ping Graph</h1>
+      <h1>{props.title}</h1>
       <LineChart width={600} height={400} data={props.data}>
         {props.dataKeys.map((keyName, index) => {
           return <Line 
+            key={index+keyName}
             type={'monotone'} 
             dataKey={keyName} 
             stroke={props.colors[index]} 

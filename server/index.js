@@ -11,7 +11,13 @@ const __dirname = path.dirname(__filename);
 
 let currentInterval = undefined;
 // Urls to ping
-const urls = ["https://google.com", "https://twitter.com", "https://amazon.com"];
+const urls = [
+    "https://google.com",
+    "https://twitter.com", 
+    "https://amazon.com", 
+    "https://facebook.com",
+    "https://cnet.com",
+  ];
 
 // Create the database table if it doenst exist
 createDBTable();

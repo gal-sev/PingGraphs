@@ -1,47 +1,65 @@
-import Chart, { ChartI } from './Chart';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
+import Chart from './Chart';
 import './MainWindow.scss';
 
-const gData: ChartI[] = [
-  {url: "https://google.com", date: "2022-11-13 15:11:34", pingTime: 50},
-  {url: "https://google.com", date: "2022-11-13 15:15:34", pingTime: 100},
-  {url: "https://google.com", date: "2022-11-13 15:16:34", pingTime: 15},
-  {url: "https://google.com", date: "2022-11-13 15:17:34", pingTime: 23},
-  {url: "https://google.com", date: "2022-11-13 15:20:34", pingTime: 35},
-  {url: "https://google.com", date: "2022-11-13 15:26:34", pingTime: 50},
-  {url: "https://google.com", date: "2022-11-13 15:27:34", pingTime: 70},
-  {url: "https://google.com", date: "2022-11-13 15:28:34", pingTime: 105},
-  {url: "https://google.com", date: "2022-11-13 15:29:34", pingTime: 220}
-]
-
-const tData: ChartI[] = [
-  {url: "https://twitter.com", date: "2022-11-13 15:11:34", pingTime: 80},
-  {url: "https://twitter.com", date: "2022-11-13 15:15:34", pingTime: 20},
-  {url: "https://twitter.com", date: "2022-11-13 15:16:34", pingTime: 70},
-  {url: "https://twitter.com", date: "2022-11-13 15:17:34", pingTime: 105},
-  {url: "https://twitter.com", date: "2022-11-13 15:20:34", pingTime: 130},
-  {url: "https://twitter.com", date: "2022-11-13 15:26:34", pingTime: 150},
-  {url: "https://twitter.com", date: "2022-11-13 15:27:34", pingTime: 70},
-  {url: "https://twitter.com", date: "2022-11-13 15:28:34", pingTime: 80},
-  {url: "https://twitter.com", date: "2022-11-13 15:29:34", pingTime: 60}
+const urls = [
+  "https://google.com",
+  "https://twitter.com", 
+  "https://amazon.com", 
+  "https://facebook.com",
+  "https://cnet.com",
 ];
+const colors = ["#2196F3", "#FF0000", "#FFF0F0", "#00FF00", "#FFA500"];
 
-const mergedData = [
-  {date: "2022-11-13 15:11:34", pingTimeT: 80, pingTimeG: 50},
-  {date: "2022-11-13 15:15:34", pingTimeT: 20, pingTimeG: 100},
-  {date: "2022-11-13 15:16:34", pingTimeT: 70, pingTimeG: 15},
-  {date: "2022-11-13 15:17:34", pingTimeT: 105, pingTimeG: 23},
-  {date: "2022-11-13 15:20:34", pingTimeT: 130, pingTimeG: 35},
-  {date: "2022-11-13 15:26:34", pingTimeT: 150, pingTimeG: 50},
-  {date: "2022-11-13 15:27:34", pingTimeT: 70, pingTimeG: 70},
-  {date: "2022-11-13 15:28:34", pingTimeT: 80, pingTimeG: 105},
-  {date: "2022-11-13 15:29:34", pingTimeT: 60, pingTimeG: 220}
-];
+// Join object arrays without Duplicates.
+const joinWithoutDupes = (A: any[], B: any[]) => {
+  const a = new Set(A.map(x => x.item))
+  const b = new Set(B.map(x => x.item))
+  return [...A.filter(x => !b.has(x.item)), ...B.filter(x => !a.has(x.item))];
+}
 
 function MainWindow() {
+  // Needs to be initiated with the same number of arrays you are searching for
+  const [chartsData, setChartsData] = useState([[],[],[],[],[]]);
+
+  useEffect(() => {
+    const fetchedChartsData = urls.map(async (url) => {
+      let chartData = (await axios.get(`pingsDB/?url=${url}`)).data;
+      return chartData;
+    })
+
+    Promise.all(fetchedChartsData).then((resData) => {
+      let newChartsData: any[] = [];
+      resData.forEach((pingsData, index) => {
+        let mergedUniqData = joinWithoutDupes(chartsData[index], pingsData);
+        if (mergedUniqData.length > 1) {
+          newChartsData.push(mergedUniqData);
+        } else {
+          newChartsData.push(chartsData[index]);
+        }
+      });
+      setChartsData(newChartsData);
+    });
+
+    
+  }, []);
+  
   return (
     <div className="MainWindow">
       <h1 className='title'>Ping Graphs</h1>
-      <Chart data={mergedData} dataKeys={["pingTimeT", "pingTimeG"]} colors={["#2196F3","#FF0000"]}></Chart>
+      <div className='Charts'>
+        {
+          chartsData.map((chartD, index) => {
+            return <Chart 
+              key={index}
+              data={chartD} 
+              dataKeys={["pingTime"]} 
+              colors={[colors[index]]}
+              title={urls[index].substring(8)}/>
+          })
+        }
+      </div>
     </div>
   );
 }
