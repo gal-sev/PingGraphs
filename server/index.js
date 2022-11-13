@@ -8,22 +8,40 @@ const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+let currentInterval = undefined;
+
 app.get(`/ping`, async (req, res) => {
     const responseTime = await GetPing("https://google.com");
-    console.log("time: " + responseTime);
-    res.send("time: " + responseTime);
+    console.log("Response time: " + responseTime);
+    res.send("Response time: " + responseTime);
 });
 
 app.get(`/startPingLoop`, (req, res) => {
-    //TODO: Start the ping loop
-    console.log("starting ping loop...");
-    res.send("Starting loop");
+    if (currentInterval === undefined) {
+        currentInterval = setInterval(() => {
+            GetPing("https://google.com").then(res => {
+                console.log("response time: " + res);
+                //TODO: insert into database too
+            });
+        }, 1000);
+        console.log("Started ping loop");
+        res.send("Started ping loop");
+    } else {
+        console.log("Ping loop already running");
+        res.send("Ping loop already running");
+    }
 });
 
 app.get(`/stopPingLoop`, (req, res) => {
-    //TODO: Stop the ping loop
-    console.log("stopping the ping loop");
-    res.send("loop stopped");
+    if (currentInterval !== undefined) {
+        clearInterval(currentInterval);
+        currentInterval = undefined;
+        console.log("Stopped ping loop");
+        res.send("Stopped ping loop");
+    } else {
+        console.log("Ping loop not running");
+        res.send("Ping loop not running");
+    }
 });
 
 app.use(express.static(path.join(__dirname, "build")));
