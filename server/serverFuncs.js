@@ -25,8 +25,8 @@ export const GetPing = async (url) => {
 }
 
 export const insertPings = async (urls) => {
+  const pingDate = toSqlDatetime(new Date());
   const pingRequests = urls.map(async (url) => {
-    const pingDate = toSqlDatetime(new Date());
     let pingTime = await GetPing(url);
     console.log(`Response time to ${url} at ${pingDate} - ${pingTime}ms`);
     return {
