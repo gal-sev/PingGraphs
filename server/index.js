@@ -1,11 +1,18 @@
 import express from 'express';
 import path from "path";
 import { fileURLToPath } from 'url';
+import { GetPing } from './serverFuncs.js';
 
 const app = express();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+app.get(`/ping`, async (req, res) => {
+    const responseTime = await GetPing("https://google.com");
+    console.log("time: " + responseTime);
+    res.send("time: " + responseTime);
+});
 
 app.get(`/startPingLoop`, (req, res) => {
     //TODO: Start the ping loop
