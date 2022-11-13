@@ -1,7 +1,8 @@
 import express from 'express';
 import path from "path";
 import { fileURLToPath } from 'url';
-import { GetPing } from './serverFuncs.js';
+import { createDBTable } from './database.js';
+import { insertPings } from './serverFuncs.js';
 
 const app = express();
 
@@ -9,19 +10,23 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 let currentInterval = undefined;
+// Urls to ping
+const urls = ["https://google.com", "https://twitter.com", "https://amazon.com"];
+
+// Create the database table if it doenst exist
+createDBTable();
 
 app.get(`/ping`, async (req, res) => {
-    const responseTime = await GetPing("https://google.com");
-    console.log("Response time: " + responseTime);
-    res.send("Response time: " + responseTime);
+    const result = await insertPings(urls);
+    console.log(result);
+    res.send(result);
 });
 
 app.get(`/startPingLoop`, (req, res) => {
     if (currentInterval === undefined) {
         currentInterval = setInterval(() => {
-            GetPing("https://google.com").then(res => {
-                console.log("response time: " + res);
-                //TODO: insert into database too
+            insertPings(urls).then(res => {
+                console.log(res);
             });
         }, 1000);
         console.log("Started ping loop");
