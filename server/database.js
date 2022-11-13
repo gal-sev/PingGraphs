@@ -57,10 +57,10 @@ export function printTable() {
 }
 
 // Get the data from the table
-export function getTableData() {
+export function getTableData(url) {
 	return new Promise((resolve, reject) => {
-		const getRows = `SELECT * FROM pings`;
-		db.all(getRows, [], (err, rows) => {
+		const getRows = `SELECT * FROM pings WHERE url = ?`;
+		db.all(getRows, [url], (err, rows) => {
 			if (err) {
 				reject({message: err.message});
 			}

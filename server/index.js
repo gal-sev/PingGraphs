@@ -1,7 +1,7 @@
 import express from 'express';
 import path from "path";
 import { fileURLToPath } from 'url';
-import { createDBTable } from './database.js';
+import { createDBTable, getTableData } from './database.js';
 import { insertPings } from './serverFuncs.js';
 
 const app = express();
@@ -15,6 +15,17 @@ const urls = ["https://google.com", "https://twitter.com", "https://amazon.com"]
 
 // Create the database table if it doenst exist
 createDBTable();
+
+app.get(`/pingsDB/`, async (req, res) => {
+    //TODO: Switch to chunks instead?
+    try {
+        const tableData = await getTableData(req.query.url);
+        res.send(tableData);
+    } catch (error) {
+        console.log(error);
+        res.send(error);
+    }
+});
 
 app.get(`/ping`, async (req, res) => {
     const result = await insertPings(urls);
