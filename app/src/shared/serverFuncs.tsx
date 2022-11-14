@@ -25,24 +25,30 @@ export function stopPingInterval() {
 
 export function fetchNewData(chartsData: any[][], setChartsData: any, urls: string[]) {
   const fetchedChartsData = urls.map(async (url) => {
-    let chartData = (await axios.get(`pingsDB/?url=${url}`)).data;
-    return chartData;
+    try {
+      let fetchedChartData = (await axios.get(`pingsDB/?url=${url}`)).data;
+      return fetchedChartData;
+    } catch (error) {
+      console.log(error);
+      return undefined;
+    }
   })
+  if (fetchedChartsData !== undefined) {
+    Promise.all(fetchedChartsData).then((resData) => {
+      let newChartsData: any[] = [];
+      resData.forEach((pingsData, index) => {
+        let mergedUniqData = joinWithoutDupes(chartsData[index], pingsData);
+        if (mergedUniqData.length > 1) {
+          newChartsData.push(mergedUniqData);
+        } else {
+          newChartsData.push(chartsData[index]);
+        }
+      });
   
-  Promise.all(fetchedChartsData).then((resData) => {
-    let newChartsData: any[] = [];
-    resData.forEach((pingsData, index) => {
-      let mergedUniqData = joinWithoutDupes(chartsData[index], pingsData);
-      if (mergedUniqData.length > 1) {
-        newChartsData.push(mergedUniqData);
-      } else {
-        newChartsData.push(chartsData[index]);
-      }
+      setChartsData(newChartsData);
+      localStorage.setItem("chartsData", JSON.stringify(newChartsData));
     });
-
-    setChartsData(newChartsData);
-    localStorage.setItem("chartsData", JSON.stringify(newChartsData));
-  });
+  }
 }
 
 // Join object arrays without Duplicates.

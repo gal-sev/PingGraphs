@@ -1,2 +1,2 @@
-cd /d E:\Users\gals\Desktop\BetterMusicBotJs\server
+cd .\server
 npm start
