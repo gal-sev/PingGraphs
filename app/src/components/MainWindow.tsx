@@ -12,16 +12,17 @@ const urls = [
 ];
 const colors = ["#2196F3", "#FF0000", "#FFF0F0", "#00FF00", "#FFA500"];
 
-let currentFetchInterval: any = undefined;
-
-
 function MainWindow() {
   // Needs to be initiated with the same number of arrays you are searching for
   const [chartsData, setChartsData] = useState([[],[],[],[],[]]);
 
   useEffect(() => {
+    const storageData = JSON.parse(localStorage.getItem("chartsData") + "");
+    if (storageData) {
+      setChartsData(storageData);
+    }
     // Fetching data from server every 3 seconds
-    startFetchInterval(chartsData, setChartsData, currentFetchInterval, urls);
+    startFetchInterval(chartsData, setChartsData, urls);
   }, []);
   
   return (

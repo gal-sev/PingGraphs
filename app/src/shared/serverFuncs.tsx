@@ -1,6 +1,8 @@
 import axios from "axios";
 
-export function startFetchInterval(chartsData: any[][], setChartsData: any, currentFetchInterval: any, urls: string[]) {
+let currentFetchInterval: any = undefined;
+
+export function startFetchInterval(chartsData: any[][], setChartsData: any, urls: string[]) {
   if (currentFetchInterval === undefined) {
     currentFetchInterval = setInterval(() => fetchNewData(chartsData, setChartsData, urls), 3000);
     console.log("Started fetch loop");
@@ -22,7 +24,6 @@ export function stopPingInterval() {
 }
 
 export function fetchNewData(chartsData: any[][], setChartsData: any, urls: string[]) {
-  
   const fetchedChartsData = urls.map(async (url) => {
     let chartData = (await axios.get(`pingsDB/?url=${url}`)).data;
     return chartData;
@@ -40,6 +41,7 @@ export function fetchNewData(chartsData: any[][], setChartsData: any, urls: stri
     });
 
     setChartsData(newChartsData);
+    localStorage.setItem("chartsData", JSON.stringify(newChartsData));
   });
 }
 
