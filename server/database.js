@@ -25,12 +25,6 @@ export function dropTable() {
 	});
 }
 
-const toSqlDatetime = (inputDate) => {
-	const date = new Date(inputDate);
-	const dateWithOffest = new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
-	return dateWithOffest.toISOString().slice(0, 19).replace('T', ' ');
-}
-
 // Insert data to the table
 export function insertData(data) {
 	data.forEach(pingData => {
@@ -42,17 +36,6 @@ export function insertData(data) {
 				if (err) return console.error(err.message);
 			}
 		);
-	});
-}
-
-// Print the data from the table
-export function printTable() {
-	const getRows = `SELECT * FROM pings`;
-	db.all(getRows, [], (err, rows) => {
-		if (err) return console.error(err.message);
-		rows.forEach(row => {
-			console.log(row);
-		});
 	});
 }
 

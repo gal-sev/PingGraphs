@@ -2,6 +2,7 @@
 
 .MainWindow {
   display: flex;
+  gap: 8px;
   flex-direction: column;
   color: variables.$text-color;
   align-items: center;
@@ -16,6 +17,21 @@
   }
   h1 {
     text-align: center;
+  }
+  .ButtonsHolder {
+    display: flex;
+    width: 40vw;
+    justify-content: space-around;
+    .StartUpdtIntvBtn{
+      padding: 8px;
+      border-radius: 5px;
+      border: none;
+    }
+    .StopUpdtIntvBtn{
+      padding: 8px;
+      border-radius: 5px;
+      border: none;
+    }
   }
 
 }

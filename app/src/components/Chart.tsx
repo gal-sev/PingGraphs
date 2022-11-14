@@ -6,7 +6,8 @@ export interface ChartI {
   date: string,
   pingTime: number
 }
-
+// Leaving colors & datakeys as arrays incase 
+// I will want to combine them into 1 chart
 function Chart(props: {data: any[], dataKeys: string[], colors: string[], title: string}) {
   return (
     <div className="Chart">

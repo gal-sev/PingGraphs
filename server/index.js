@@ -13,17 +13,16 @@ let currentInterval = undefined;
 // Urls to ping
 const urls = [
     "https://google.com",
-    "https://twitter.com", 
-    "https://amazon.com", 
     "https://facebook.com",
+    "https://twitter.com", 
     "https://cnet.com",
-  ];
+    "https://amazon.com", 
+];
 
 // Create the database table if it doenst exist
 createDBTable();
 
 app.get(`/pingsDB/`, async (req, res) => {
-    //TODO: Switch to chunks instead?
     try {
         const tableData = await getTableData(req.query.url);
         res.send(tableData);
@@ -31,12 +30,6 @@ app.get(`/pingsDB/`, async (req, res) => {
         console.log(error);
         res.send(error);
     }
-});
-
-app.get(`/ping`, async (req, res) => {
-    const result = await insertPings(urls);
-    console.log(result);
-    res.send(result);
 });
 
 app.get(`/startPingLoop`, (req, res) => {
